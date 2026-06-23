@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PenTool, BookOpen, Library, LogOut, Shield, Users, Award, Settings, X, Menu } from 'lucide-react';
+import { LayoutDashboard, PenTool, BookOpen, Library, LogOut, Shield, Users, Award, Settings, X, HelpCircle, Info } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -128,10 +128,46 @@ function ProfileSettingsModal({ isOpen, onClose }: { isOpen: boolean, onClose: (
   );
 }
 
+const NAV_TUTORIALS: Record<string, { title: string, text: string }> = {
+  '/dashboard': { title: 'Dashboard', text: 'The Dashboard gives you an overview of your active tasks, upcoming classes, and recent notifications.' },
+  '/attendance': { title: 'Attendance & SF2', text: 'Manage daily attendance for your learners. The system will automatically generate the required SF2 forms for the Department of Education.' },
+  '/grades': { title: 'Gradebook & SF9', text: 'Input and compute learners grades. You can generate report cards (SF9) easily when the quarter ends.' },
+  '/learners': { title: 'Learner Management', text: 'Add, edit, or remove learners in your advisory class. You can also monitor their basic information here.' },
+  '/profiles': { title: 'Reading & Numeracy Profiles', text: 'Record the results of standardized reading and numeracy assessments to track student literacy.' },
+  '/toolkit': { title: 'Teacher Toolkit', text: 'Access quick utilities such as class randomizers, seating arrangements, and automated lesson planners.' },
+  '/curriculum': { title: 'Curriculum', text: 'Browse the standard curriculum maps and competency codes aligned with the national framework.' },
+  '/repository': { title: 'Repository', text: 'A digital storage for your lesson plans, modules, and instructional materials.' },
+  '/admin/users': { title: 'User Management', text: 'Provision and manage teacher and administrator accounts within the institution.' }
+};
+
+function TutorialModal({ tutorial, onClose }: { tutorial: { title: string, text: string } | null, onClose: () => void }) {
+  if (!tutorial) return null;
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+      <div className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 animate-in zoom-in-95 duration-200">
+        <div className="flex items-center space-x-3 mb-3 text-orange-600">
+          <Info className="w-6 h-6" />
+          <h2 className="text-lg font-semibold text-slate-900">{tutorial.title} Tutorial</h2>
+        </div>
+        <p className="text-slate-600 text-sm mb-6 leading-relaxed">
+          {tutorial.text}
+        </p>
+        <button 
+          onClick={onClose}
+          className="w-full px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-lg hover:bg-orange-700 transition"
+        >
+          Got it
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Layout() {
   const { user, switchRole, logout } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeTutorial, setActiveTutorial] = useState<{ title: string, text: string } | null>(null);
   const location = useLocation();
 
   // Close mobile menu when navigating
@@ -164,31 +200,42 @@ export default function Layout() {
       
       <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
         {allowedNav.map((item) => (
-          <NavLink
-            key={item.name}
-            to={item.href}
-            className={({ isActive }) =>
-              cn(
-                'group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200',
-                isActive
-                  ? 'bg-white/60 text-orange-700 shadow-sm border border-white/50'
-                  : 'text-slate-600 hover:bg-white/40 hover:text-slate-900'
-              )
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <item.icon
-                  className={cn(
-                    'mr-3 flex-shrink-0 h-5 w-5 transition-colors',
-                    isActive ? 'text-orange-600' : 'text-slate-400 group-hover:text-slate-500'
-                  )}
-                  aria-hidden="true"
-                />
-                {item.name}
-              </>
-            )}
-          </NavLink>
+          <div key={item.name} className="flex flex-row items-center relative group">
+            <NavLink
+              to={item.href}
+              className={({ isActive }) =>
+                cn(
+                  'flex-1 flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200',
+                  isActive
+                    ? 'bg-white/60 text-orange-700 shadow-sm border border-white/50'
+                    : 'text-slate-600 hover:bg-white/40 hover:text-slate-900'
+                )
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <item.icon
+                    className={cn(
+                      'mr-3 flex-shrink-0 h-5 w-5 transition-colors',
+                      isActive ? 'text-orange-600' : 'text-slate-400 group-hover:text-slate-500'
+                    )}
+                    aria-hidden="true"
+                  />
+                  {item.name}
+                </>
+              )}
+            </NavLink>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveTutorial(NAV_TUTORIALS[item.href] || null);
+              }}
+              className="absolute right-2 opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 hover:text-orange-500 hover:bg-white/50 rounded-lg transition-all focus:opacity-100"
+              title="Show tutorial for this section"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+          </div>
         ))}
       </div>
 
@@ -318,6 +365,7 @@ export default function Layout() {
       </nav>
 
       <ProfileSettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <TutorialModal tutorial={activeTutorial} onClose={() => setActiveTutorial(null)} />
     </div>
   );
 }

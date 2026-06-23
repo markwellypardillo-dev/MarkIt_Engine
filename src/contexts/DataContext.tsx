@@ -58,74 +58,15 @@ interface DataContextType {
   };
 }
 
-const MOCK_CLASSES: Class[] = [
-  { id: 'c1', name: 'Grade 7 - Mathematics' },
-  { id: 'c2', name: 'Grade 9 - Science' },
-  { id: 'c3', name: 'Grade 10 - History' },
-];
+const MOCK_CLASSES: Class[] = [];
 
-const MOCK_STUDENTS: Student[] = [
-  { id: 's1', name: 'Alex Johnson', classId: 'c1', baseGrade: 82 },
-  { id: 's2', name: 'Sarah Williams', classId: 'c1', baseGrade: 75 },
-  { id: 's3', name: 'Marcus Chen', classId: 'c1', baseGrade: 88 },
-  { id: 's4', name: 'Emily Stanton', classId: 'c2', baseGrade: 92 },
-  { id: 's5', name: 'Michael Brown', classId: 'c2', baseGrade: 65 },
-  { id: 's6', name: 'Jessica Davis', classId: 'c3', baseGrade: 95 },
-];
+const MOCK_STUDENTS: Student[] = [];
 
-// Pre-populate some historical attendance
-const generateMockAttendance = () => {
-  const records: AttendanceRecord[] = [];
-  const today = new Date();
-  
-  MOCK_STUDENTS.forEach(student => {
-    // Generate last 10 days of attendance
-    for (let i = 0; i < 10; i++) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      // Skip weekends
-      if (d.getDay() === 0 || d.getDay() === 6) continue;
-      
-      const dateStr = d.toISOString().split('T')[0];
-      
-      // Give Sarah and Michael more absences to make them at-risk
-      let status: AttendanceStatus = 'present';
-      if ((student.id === 's2' || student.id === 's5') && Math.random() > 0.6) {
-        status = 'absent';
-      } else if (Math.random() > 0.8) {
-        status = 'late';
-      }
+const INITIAL_ATTENDANCE: AttendanceRecord[] = [];
 
-      records.push({
-        id: `${student.id}-${dateStr}`,
-        date: dateStr,
-        classId: student.classId,
-        studentId: student.id,
-        status,
-      });
-    }
-  });
-  return records;
-};
+const MOCK_ASSIGNMENTS: Assignment[] = [];
 
-const INITIAL_ATTENDANCE = generateMockAttendance();
-
-const MOCK_ASSIGNMENTS: Assignment[] = [
-  { id: 'a1', classId: 'c1', name: 'Midterm Exam', maxScore: 100 },
-  { id: 'a2', classId: 'c1', name: 'Homework 1', maxScore: 50 },
-  { id: 'a3', classId: 'c2', name: 'Lab Report', maxScore: 100 }
-];
-
-const MOCK_GRADES: Grade[] = [
-  { id: 'g1', studentId: 's1', assignmentId: 'a1', score: 85 },
-  { id: 'g2', studentId: 's1', assignmentId: 'a2', score: 45 },
-  { id: 'g3', studentId: 's2', assignmentId: 'a1', score: 70 },
-  { id: 'g4', studentId: 's2', assignmentId: 'a2', score: 35 },
-  { id: 'g5', studentId: 's3', assignmentId: 'a1', score: 92 },
-  { id: 'g6', studentId: 's3', assignmentId: 'a2', score: 48 },
-  { id: 'g7', studentId: 's4', assignmentId: 'a3', score: 95 },
-  { id: 'g8', studentId: 's5', assignmentId: 'a3', score: 60 }
-];
+const MOCK_GRADES: Grade[] = [];
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 

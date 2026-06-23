@@ -196,7 +196,17 @@ export default function Attendance() {
         </div>
       </div>
 
-      {allStudents.filter(s => s.classId === selectedClass).length === 0 ? (
+      {classes.length === 0 ? (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 text-center flex flex-col items-center justify-center">
+          <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mb-4">
+            <Users className="h-8 w-8" />
+          </div>
+          <h3 className="text-lg font-medium text-slate-900 mb-2">No Classes Found</h3>
+          <p className="text-slate-500 mb-6 max-w-md">
+            Start by adding a class from the top bar before trying to take attendance.
+          </p>
+        </div>
+      ) : allStudents.filter(s => s.classId === selectedClass).length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 text-center flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mb-4">
             <FileSpreadsheet className="h-8 w-8" />

@@ -105,9 +105,30 @@ export default function Gradebook() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in duration-500">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border-b border-slate-200 bg-slate-50 gap-3">
-          <h3 className="font-medium text-slate-800">Assignments</h3>
+      {classes.length === 0 ? (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 text-center flex flex-col items-center justify-center">
+          <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mb-4">
+            <Award className="h-8 w-8" />
+          </div>
+          <h3 className="text-lg font-medium text-slate-900 mb-2">No Classes Found</h3>
+          <p className="text-slate-500 mb-6 max-w-md">
+            Start by adding a class in Learner Management before managing grades.
+          </p>
+        </div>
+      ) : currentStudents.length === 0 ? (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 text-center flex flex-col items-center justify-center">
+          <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mb-4">
+            <BookOpen className="h-8 w-8" />
+          </div>
+          <h3 className="text-lg font-medium text-slate-900 mb-2">No Students</h3>
+          <p className="text-slate-500 mb-6 max-w-md">
+            Import students first so you can start assigning grades.
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in duration-500">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border-b border-slate-200 bg-slate-50 gap-3">
+            <h3 className="font-medium text-slate-800">Assignments</h3>
           {isAddingAssignment ? (
              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 <input
@@ -212,6 +233,7 @@ export default function Gradebook() {
           </table>
         </div>
       </div>
+      )}
     </div>
   );
 }

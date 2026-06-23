@@ -8,6 +8,7 @@ import AdminUsers from './pages/AdminUsers';
 import Login from './pages/Login';
 import Attendance from './pages/Attendance';
 import Gradebook from './pages/Gradebook';
+import Learners from './pages/Learners';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DataProvider } from './contexts/DataContext';
 
@@ -31,6 +32,7 @@ export default function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="attendance" element={<Attendance />} />
               <Route path="grades" element={<Gradebook />} />
+              <Route path="learners" element={<Learners />} />
               <Route path="toolkit" element={<TeacherToolkit />} />
               <Route path="curriculum" element={<Curriculum />} />
               <Route path="repository" element={<Repository />} />

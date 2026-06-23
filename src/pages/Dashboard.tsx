@@ -24,6 +24,25 @@ export default function Dashboard() {
   const [expandedStudent, setExpandedStudent] = useState<string | null>(null);
   const { students, getStudentStats, classes } = useData();
 
+  if (classes.length === 0) {
+    return (
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 text-center">
+        <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 text-orange-600">
+          <BookOpen className="w-10 h-10" />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">Welcome to MarkIt Engine</h2>
+        <p className="text-slate-500 max-w-md mx-auto mb-8 leading-relaxed">
+          Your workspace is currently empty. To make the app come alive with charts and analytics, start by creating a class or importing your learners.
+        </p>
+        <div className="flex items-center justify-center space-x-4">
+          <a href="/learners" className="px-5 py-2.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition">
+            Go to Learner Management
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   const toggleStudent = (id: string) => {
     if (expandedStudent === id) {
       setExpandedStudent(null);
