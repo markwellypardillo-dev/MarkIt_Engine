@@ -133,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         data: {
           first_name: firstName,
           last_name: lastName,
-          role: 'teacher',
+          role: email.toLowerCase().includes('admin') ? 'admin' : 'teacher',
         }
       }
     });
