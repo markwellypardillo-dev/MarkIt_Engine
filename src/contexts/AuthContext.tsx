@@ -43,17 +43,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   const login = (email: string, password?: string) => {
+    // Check for saved profile pictures
+    let profilePicture = undefined;
+    try {
+      const savedPics = JSON.parse(localStorage.getItem('profilePictures') || '{}');
+      profilePicture = savedPics[email.toLowerCase()] || undefined;
+    } catch (e) {
+      console.error('Failed to parse local storage', e);
+    }
+
     // Mock Supabase Auth login wrapper
     if (email.toLowerCase() === 'admin@gmail.com') {
       if (password === 'admin123') {
-        setUser({ ...BUILT_IN_ADMIN, email });
+        setUser({ ...BUILT_IN_ADMIN, email, profilePicture });
       } else {
         throw new Error('Invalid administrator credentials.');
       }
-    } else if (email.includes('admin')) {
-      setUser(BUILT_IN_ADMIN);
+    } else if (email.toLowerCase().includes('admin')) {
+      setUser({ ...BUILT_IN_ADMIN, profilePicture: profilePicture || BUILT_IN_ADMIN.profilePicture });
     } else {
-      setUser({ ...MOCK_TEACHER, email });
+      setUser({ ...MOCK_TEACHER, email, profilePicture: profilePicture || MOCK_TEACHER.profilePicture });
     }
   };
 
@@ -80,6 +89,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updateProfilePicture = (url: string) => {
     if (!user) return;
     setUser(prev => prev ? { ...prev, profilePicture: url } : null);
+
+    try {
+      const savedPics = JSON.parse(localStorage.getItem('profilePictures') || '{}');
+      savedPics[user.email.toLowerCase()] = url;
+      localStorage.setItem('profilePictures', JSON.stringify(savedPics));
+    } catch (e) {
+      console.error('Failed to save profile picture to local storage', e);
+    }
   };
 
   return (

@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 
 async function startServer() {
   const app = express();
@@ -23,7 +23,10 @@ async function startServer() {
         return res.status(500).json({ error: 'GEMINI_API_KEY is missing' });
       }
 
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = new GoogleGenAI({ 
+        apiKey,
+        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
+      });
       
       let prompt = `Generate a comprehensive grading rubric for a ${gradeLevel} assignment on "${topic}". Include the following criteria: ${criteria.join(', ')}. Return the output in Markdown format.`;
       
@@ -32,8 +35,9 @@ async function startServer() {
       }
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt
+        model: 'gemini-3.1-pro-preview',
+        contents: prompt,
+        config: { thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH } }
       });
 
       res.json({ rubric: response.text });
@@ -52,7 +56,10 @@ async function startServer() {
         return res.status(500).json({ error: 'GEMINI_API_KEY is missing' });
       }
 
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = new GoogleGenAI({ 
+        apiKey,
+        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
+      });
       const prompt = `Generate a personalized email draft to a parent regarding their student, ${studentName}.
 Performance level: ${performance}
 Key themes to address: ${themes.join(', ')}
@@ -61,7 +68,7 @@ Tone: ${tone}
 IMPORTANT: Provide the output in Markdown format. Keep placeholders like [Teacher Name] or [Date] in brackets.`;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.5-flash',
         contents: prompt
       });
 
