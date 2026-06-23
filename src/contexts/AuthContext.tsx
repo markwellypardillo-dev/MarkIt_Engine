@@ -34,6 +34,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         mapSupabaseUser(session.user);
+      } else if (localStorage.getItem('mockAdminLoggedIn') === 'true') {
+        const email = 'admin@gmail.com';
+        let profilePicture = undefined;
+        try {
+          const savedPics = JSON.parse(localStorage.getItem('profilePictures') || '{}');
+          profilePicture = savedPics[email] || undefined;
+        } catch (e) {}
+        
+        setUser({
+          id: 'mock-admin-id',
+          email,
+          firstName: 'System',
+          lastName: 'Administrator',
+          role: 'admin',
+          profilePicture
+        });
+        setLoading(false);
       } else {
         setLoading(false);
       }
@@ -42,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         mapSupabaseUser(session.user);
-      } else {
+      } else if (localStorage.getItem('mockAdminLoggedIn') !== 'true') {
         setUser(null);
         setLoading(false);
       }
@@ -75,6 +92,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async (email: string, password?: string) => {
+    // Hardcoded bypass for admin to avoid Supabase rate limits on new free tier projects
+    if (email.toLowerCase() === 'admin@gmail.com') {
+      if (password === 'admin123') {
+        localStorage.setItem('mockAdminLoggedIn', 'true');
+        
+        let profilePicture = undefined;
+        try {
+          const savedPics = JSON.parse(localStorage.getItem('profilePictures') || '{}');
+          profilePicture = savedPics[email.toLowerCase()] || undefined;
+        } catch (e) {}
+        
+        setUser({
+          id: 'mock-admin-id',
+          email,
+          firstName: 'System',
+          lastName: 'Administrator',
+          role: 'admin',
+          profilePicture
+        });
+        return;
+      } else {
+        throw new Error("Invalid login credentials");
+      }
+    }
+
     // Mock Supabase fallback for demoing before ENV vars are set
     if (!import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL === 'https://placeholder-project-id.supabase.co') {
       console.warn("Using mock auth because VITE_SUPABASE_URL is not set.");
@@ -147,6 +189,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    if (localStorage.getItem('mockAdminLoggedIn') === 'true') {
+      localStorage.removeItem('mockAdminLoggedIn');
+      setUser(null);
+      return;
+    }
+
     if (!import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL === 'https://placeholder-project-id.supabase.co') {
       setUser(null);
       return;
