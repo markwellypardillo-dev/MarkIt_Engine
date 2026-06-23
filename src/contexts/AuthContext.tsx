@@ -80,14 +80,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {}
     }
 
-    setUser({
+    const userData: User = {
       id: supabaseUser.id,
       email: supabaseUser.email || '',
       firstName: meta.first_name || 'Admin',
       lastName: meta.last_name || 'User',
       role: meta.role || 'teacher',
       profilePicture: profilePicture
-    });
+    };
+
+    // Cache to local server so admin dashboard can list active authenticated users
+    fetch('/api/profiles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    }).catch(() => {});
+
+    setUser(userData);
     setLoading(false);
   };
 
@@ -126,14 +135,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profilePicture = savedPics[email.toLowerCase()] || undefined;
       } catch (e) {}
       
-      setUser({
+      const mockData: User = {
         id: 'mock-user',
         email,
         firstName: 'Mock',
         lastName: 'Teacher',
         role: 'teacher',
         profilePicture
-      });
+      };
+      fetch('/api/profiles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(mockData)
+      }).catch(() => {});
+      setUser(mockData);
       return;
     }
 
@@ -154,13 +169,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (email: string, firstName: string, lastName: string, password?: string) => {
     if (!import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL === 'https://placeholder-project-id.supabase.co') {
       console.warn("Using mock registration because VITE_SUPABASE_URL is not set.");
-      setUser({
+      const regData: User = {
         id: `teacher-${Math.random().toString(36).substr(2, 9)}`,
         email,
         firstName,
         lastName,
         role: 'teacher'
-      });
+      };
+      fetch('/api/profiles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(regData)
+      }).catch(() => {});
+      setUser(regData);
       return;
     }
 

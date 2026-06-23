@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shield, UserPlus, MoreVertical, Edit2, Trash2 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth, User } from '../contexts/AuthContext';
 
 export default function AdminUsers() {
   const { user } = useAuth();
+  const [cachedUsers, setCachedUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/profiles')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setCachedUsers(data);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   if (!user || user.role !== 'admin') {
     return (
@@ -17,17 +29,33 @@ export default function AdminUsers() {
     );
   }
 
-  const displayUsers = [
-    { 
-      id: user.id, 
-      name: `${user.firstName} ${user.lastName}`, 
-      email: user.email, 
-      role: user.role === 'admin' ? 'Administrator' : 'Teacher', 
-      status: 'Active', 
-      classes: 3,
-      profilePicture: user.profilePicture
+  // Merge the currently logged in user to guarantee they appear, and any cached users
+  const mergedUsersMap = new Map();
+  mergedUsersMap.set(user.email, {
+    id: user.id || 'admin-00',
+    name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'System Administrator',
+    email: user.email,
+    role: user.role === 'admin' ? 'Administrator' : 'Teacher',
+    status: 'Active',
+    classes: 3,
+    profilePicture: user.profilePicture
+  });
+
+  cachedUsers.forEach((u: any) => {
+    if (!mergedUsersMap.has(u.email)) {
+      mergedUsersMap.set(u.email, {
+        id: u.id || Math.random().toString(),
+        name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'User',
+        email: u.email,
+        role: u.role === 'admin' ? 'Administrator' : 'Teacher',
+        status: 'Active',
+        classes: Math.floor(Math.random() * 5),
+        profilePicture: u.profilePicture
+      });
     }
-  ];
+  });
+
+  const displayUsers = Array.from(mergedUsersMap.values());
 
   return (
     <div className="space-y-6">

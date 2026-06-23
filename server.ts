@@ -2,12 +2,56 @@ import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
+import fs from 'fs';
+
+// Helper to keep track of user profiles
+const PROFILES_FILE = path.join(process.cwd(), 'profiles.json');
+
+function getProfiles() {
+  try {
+    if (fs.existsSync(PROFILES_FILE)) {
+      return JSON.parse(fs.readFileSync(PROFILES_FILE, 'utf8'));
+    }
+  } catch (e) {
+    console.error('Error reading profiles:', e);
+  }
+  return [];
+}
+
+function saveProfile(profile: any) {
+  const profiles = getProfiles();
+  const index = profiles.findIndex((p: any) => p.email === profile.email);
+  if (index >= 0) {
+    profiles[index] = { ...profiles[index], ...profile };
+  } else {
+    profiles.push(profile);
+  }
+  fs.writeFileSync(PROFILES_FILE, JSON.stringify(profiles, null, 2));
+}
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
   app.use(express.json());
+
+  // Profile sync routes
+  app.get('/api/profiles', (req, res) => {
+    res.json(getProfiles());
+  });
+
+  app.post('/api/profiles', (req, res) => {
+    try {
+      if (req.body && req.body.email) {
+        saveProfile(req.body);
+        res.json({ success: true });
+      } else {
+        res.status(400).json({ error: 'Email required' });
+      }
+    } catch (e) {
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
 
   // API Routes
   app.get('/api/health', (req, res) => {
