@@ -23,12 +23,12 @@ export default function Login() {
     setErrorMsg('');
 
     // Simulate network request to Supabase Auth
-    setTimeout(() => {
+    setTimeout(async () => {
       try {
         if (isLogin) {
-          login(email, password);
+          await login(email, password);
         } else {
-          register(email, firstName, lastName);
+          await register(email, firstName, lastName, password);
         }
         setIsLoading(false);
         navigate('/dashboard');
