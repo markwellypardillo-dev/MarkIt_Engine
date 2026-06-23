@@ -197,44 +197,43 @@ export default function Layout() {
   );
 
   return (
-    <div className="flex h-screen bg-transparent text-slate-800">
+    <div className="flex h-screen bg-transparent text-slate-800 overflow-hidden">
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex w-64 glass flex-col z-10 m-3 mr-0 rounded-2xl overflow-hidden shadow-xl">
         <SidebarContent />
       </div>
 
-      {/* Mobile Drawer Overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden transition-opacity"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* Mobile Sidebar */}
-      <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-72 transform glass flex-col overflow-hidden shadow-2xl transition-transform duration-300 ease-in-out lg:hidden",
-        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
-        <SidebarContent />
-      </div>
-
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden m-3 lg:ml-3 rounded-2xl glass-card">
+      <div className="flex-1 flex flex-col overflow-hidden m-3 lg:ml-3 mb-24 lg:mb-3 rounded-2xl glass-card relative">
         <header className="h-16 shrink-0 border-b border-white/40 flex items-center justify-between px-4 lg:px-8 shadow-sm glass">
           <div className="flex items-center">
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="mr-4 lg:hidden p-2 rounded-md text-slate-600 hover:bg-white/40 hover:text-slate-900 transition-colors"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-            <h1 className="text-xl font-semibold text-slate-800">Workspace</h1>
+            <img src="https://i.postimg.cc/KjMBHmTL/Mark-IT-Engine-2.png" alt="Logo" className="h-8 w-auto mr-3 lg:hidden" referrerPolicy="no-referrer" />
+            <h1 className="text-xl font-semibold text-slate-800 hidden lg:block">Workspace</h1>
+            <h1 className="text-lg font-semibold text-slate-800 lg:hidden line-clamp-1">MarkIt Engine</h1>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100/50 text-green-800 border border-green-200">
               Supabase Connected
             </span>
+            {/* Mobile Profile/Settings Trigger */}
+            <div className="flex lg:hidden items-center">
+              <button 
+                onClick={() => setIsSettingsOpen(true)}
+                className="p-1.5 focus:outline-none rounded-full border-2 border-transparent hover:border-white/50 transition-colors"
+                title="Profile & Settings"
+              >
+                {user.profilePicture ? (
+                  <img src={user.profilePicture} alt="Profile" className="h-8 w-8 rounded-full object-cover border border-slate-200" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className={cn(
+                    "rounded-full h-8 w-8 flex items-center justify-center font-bold text-sm shadow-sm",
+                    user.role === 'admin' ? "bg-amber-100 text-amber-700" : "bg-orange-100 text-orange-700"
+                  )}>
+                    {user?.firstName?.charAt(0) || 'U'}
+                  </div>
+                )}
+              </button>
+            </div>
           </div>
         </header>
 
@@ -244,6 +243,45 @@ export default function Layout() {
           </div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 glass-panel border-t border-white/50 z-50 rounded-t-2xl shadow-[0_-8px_30px_rgb(0,0,0,0.05)] pb-[env(safe-area-inset-bottom)]">
+        <div className="flex items-start overflow-x-auto overflow-y-hidden no-scrollbar px-2 pt-2 pb-2">
+          {allowedNav.map((item) => {
+            const shortName = item.name.split(' (')[0].replace(' & ', ' '); // Simplified name for mobile
+            
+            return (
+              <NavLink
+                key={item.name}
+                to={item.href}
+                className={({ isActive }) =>
+                  cn(
+                    'flex flex-col items-center justify-start flex-shrink-0 w-[72px] px-1 py-1 rounded-xl transition-all duration-200 relative',
+                    isActive ? 'text-orange-600 bg-white/40' : 'text-slate-500 hover:text-slate-700 hover:bg-white/20'
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={cn(
+                      "p-1.5 rounded-xl mb-1 transition-all duration-200", 
+                      isActive ? "bg-orange-100/50 shadow-sm" : ""
+                    )}>
+                      <item.icon 
+                        className="h-5 w-5" 
+                        strokeWidth={isActive ? 2.5 : 2} 
+                      />
+                    </div>
+                    <span className="text-[10px] font-medium text-center leading-tight w-full" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {shortName}
+                    </span>
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
+        </div>
+      </nav>
 
       <ProfileSettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
