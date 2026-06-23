@@ -130,9 +130,9 @@ export default function TeacherToolkit() {
             <div className="flex-1 overflow-y-auto p-6">
               {result ? (
                 <div className="space-y-4 animate-in fade-in duration-500">
-                  <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-slate-100 pb-4 gap-3">
                     <h4 className="font-semibold text-lg text-slate-800">Generated Content</h4>
-                    <div className="flex items-center space-x-3">
+                    <div className="flex flex-wrap items-center gap-3">
                       {activeTool === 'communication' && (
                         <button 
                           onClick={() => setIsSaved(true)}

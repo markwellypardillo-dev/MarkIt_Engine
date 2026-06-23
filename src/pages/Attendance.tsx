@@ -133,33 +133,35 @@ export default function Attendance() {
           </h2>
           <p className="mt-2 text-slate-500">Select a class, import roster, and track daily attendance.</p>
         </div>
-        <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
+        <div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-3 w-full xl:w-auto">
           {isAddingClass ? (
-            <div className="flex items-center space-x-2 w-full">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
               <input
                 type="text"
                 autoFocus
                 value={newClassName}
                 onChange={e => setNewClassName(e.target.value)}
                 placeholder="e.g. Grade 11 - Art"
-                className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none flex-1 min-w-[150px]"
+                className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none flex-1 w-full min-w-0 sm:min-w-[150px]"
               />
-              <button onClick={handleAddClass} className="text-white bg-orange-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-orange-700">Save</button>
-              <button onClick={() => setIsAddingClass(false)} className="text-slate-500 hover:text-slate-700 px-2 py-2 text-sm font-medium">Cancel</button>
+              <div className="flex items-center gap-2 sm:mt-0">
+                <button onClick={handleAddClass} className="text-white bg-orange-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-orange-700 flex-1 justify-center sm:flex-none">Save</button>
+                <button onClick={() => setIsAddingClass(false)} className="text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg text-sm font-medium flex-1 justify-center sm:flex-none">Cancel</button>
+              </div>
             </div>
           ) : (
-            <div className="flex items-center space-x-2 w-full">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
               <select
                 value={selectedClass}
                 onChange={(e) => setSelectedClass(e.target.value)}
-                className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none appearance-none bg-white flex-1 min-w-[200px]"
+                className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none appearance-none bg-white flex-1 w-full min-w-0 sm:min-w-[200px]"
               >
                 {classes.length === 0 && <option value="" disabled>No classes yet</option>}
                 {classes.map(c => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
-              <button onClick={() => setIsAddingClass(true)} className="flex items-center px-3 py-2 bg-orange-50 text-orange-700 hover:bg-orange-100 rounded-lg text-sm font-medium whitespace-nowrap transition-colors">
+              <button onClick={() => setIsAddingClass(true)} className="flex items-center justify-center px-4 py-2 bg-orange-50 text-orange-700 hover:bg-orange-100 rounded-lg text-sm font-medium whitespace-nowrap transition-colors w-full sm:w-auto">
                 + Add Class
               </button>
             </div>
@@ -168,9 +170,9 @@ export default function Attendance() {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none w-full sm:w-auto"
+            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none w-full sm:w-auto min-w-0"
           />
-          <div className="relative">
+          <div className="relative w-full sm:w-auto">
             <input
               type="file"
               accept=".csv, .xlsx, .xls"
@@ -182,7 +184,7 @@ export default function Attendance() {
             <label
               htmlFor="file-upload-header"
               className={cn(
-                "inline-flex items-center px-4 py-2 border border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none transition-colors cursor-pointer w-full sm:w-auto",
+                "inline-flex justify-center items-center px-4 py-2 border border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none transition-colors cursor-pointer w-full sm:w-auto",
                 isImporting ? "opacity-70 pointer-events-none" : ""
               )}
               title="Import additional students via Excel/CSV"

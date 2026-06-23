@@ -26,7 +26,7 @@ export default function AdminUsers() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 flex items-center">
             <Shield className="h-6 w-6 text-orange-500 mr-2" />
@@ -34,7 +34,7 @@ export default function AdminUsers() {
           </h2>
           <p className="mt-2 text-slate-500">Manage institutional access, roles, and privileges.</p>
         </div>
-        <button className="flex items-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 transition-colors">
+        <button className="flex items-center justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 transition-colors w-full sm:w-auto">
           <UserPlus className="h-4 w-4 mr-2" />
           Provision Account
         </button>

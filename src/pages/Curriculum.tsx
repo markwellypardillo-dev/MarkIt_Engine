@@ -16,7 +16,7 @@ export default function Curriculum() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex justify-between items-start">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start">
         <div className="max-w-2xl">
           <h2 className="text-xl font-bold text-slate-900 flex items-center">
             <BookOpen className="h-6 w-6 text-orange-500 mr-2" />

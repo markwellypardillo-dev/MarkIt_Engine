@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, PenTool, BookOpen, Library, LogOut, Shield, Users, Award, Settings, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import { LayoutDashboard, PenTool, BookOpen, Library, LogOut, Shield, Users, Award, Settings, X, Menu } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -97,6 +97,13 @@ function ProfileSettingsModal({ isOpen, onClose }: { isOpen: boolean, onClose: (
 export default function Layout() {
   const { user, switchRole, logout } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Close mobile menu when navigating
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location]);
 
   if (!user) return null;
 
@@ -114,102 +121,124 @@ export default function Layout() {
 
   const allowedNav = navigation.filter(item => item.roles.includes(user.role));
 
-  return (
-    <div className="flex h-screen bg-transparent text-slate-800">
-      {/* Sidebar background image and overlay */}
-      <div 
-        className="fixed inset-0 z-[-1] bg-cover bg-center bg-no-repeat opacity-20 hidden md:block" 
-        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop")' }}
-      ></div>
+  const SidebarContent = () => (
+    <>
+      <div className="h-16 flex items-center px-6 border-b border-white/40">
+        <img src="https://i.postimg.cc/KjMBHmTL/Mark-IT-Engine-2.png" alt="MarkIt Engine Logo" className="h-8 w-auto object-contain mr-2" referrerPolicy="no-referrer" />
+        <span className="font-semibold text-lg tracking-tight text-slate-800">MarkIt Engine</span>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+        {allowedNav.map((item) => (
+          <NavLink
+            key={item.name}
+            to={item.href}
+            className={({ isActive }) =>
+              cn(
+                'group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200',
+                isActive
+                  ? 'bg-white/60 text-orange-700 shadow-sm border border-white/50'
+                  : 'text-slate-600 hover:bg-white/40 hover:text-slate-900'
+              )
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <item.icon
+                  className={cn(
+                    'mr-3 flex-shrink-0 h-5 w-5 transition-colors',
+                    isActive ? 'text-orange-600' : 'text-slate-400 group-hover:text-slate-500'
+                  )}
+                  aria-hidden="true"
+                />
+                {item.name}
+              </>
+            )}
+          </NavLink>
+        ))}
+      </div>
 
-      {/* Sidebar */}
-      <div className="w-64 glass flex flex-col z-10 m-3 mr-0 rounded-2xl overflow-hidden shadow-xl">
-        <div className="h-16 flex items-center px-6 border-b border-white/40">
-          <img src="https://i.postimg.cc/KjMBHmTL/Mark-IT-Engine-2.png" alt="MarkIt Engine Logo" className="h-8 w-auto object-contain mr-2" referrerPolicy="no-referrer" />
-          <span className="font-semibold text-lg tracking-tight text-slate-800">MarkIt Engine</span>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          {allowedNav.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.href}
-              className={({ isActive }) =>
-                cn(
-                  'group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200',
-                  isActive
-                    ? 'bg-white/60 text-orange-700 shadow-sm border border-white/50'
-                    : 'text-slate-600 hover:bg-white/40 hover:text-slate-900'
-                )
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <item.icon
-                    className={cn(
-                      'mr-3 flex-shrink-0 h-5 w-5 transition-colors',
-                      isActive ? 'text-orange-600' : 'text-slate-400 group-hover:text-slate-500'
-                    )}
-                    aria-hidden="true"
-                  />
-                  {item.name}
-                </>
-              )}
-            </NavLink>
-          ))}
-        </div>
-
-        <div className="p-4 border-t border-slate-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              {user.profilePicture ? (
-                <img src={user.profilePicture} alt="Profile" className="h-8 w-8 rounded-full object-cover border border-slate-200" referrerPolicy="no-referrer" />
-              ) : (
-                <div className={cn(
-                  "rounded-full h-8 w-8 flex items-center justify-center font-bold text-sm",
-                  user.role === 'admin' ? "bg-amber-100 text-amber-700" : "bg-orange-100 text-orange-700"
-                )}>
-                  {user?.firstName?.charAt(0) || 'U'}
-                </div>
-              )}
-              <div className="ml-3">
-                <p className="text-sm font-medium text-slate-700">{user?.firstName} {user?.lastName}</p>
-                <div className="flex items-center space-x-3 mt-0.5">
-                  <button 
-                    onClick={() => setIsSettingsOpen(true)}
-                    className="text-xs text-slate-500 hover:text-slate-700 flex items-center transition-colors font-medium"
-                  >
-                    <Settings className="h-3 w-3 mr-1" />
-                    Settings
-                  </button>
-                  <button 
-                    onClick={logout}
-                    className="text-xs text-slate-500 hover:text-slate-700 flex items-center transition-colors font-medium"
-                  >
-                    <LogOut className="h-3 w-3 mr-1" />
-                    Logout
-                  </button>
-                </div>
+      <div className="p-4 border-t border-slate-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            {user.profilePicture ? (
+              <img src={user.profilePicture} alt="Profile" className="h-8 w-8 rounded-full object-cover border border-slate-200" referrerPolicy="no-referrer" />
+            ) : (
+              <div className={cn(
+                "rounded-full h-8 w-8 flex items-center justify-center font-bold text-sm",
+                user.role === 'admin' ? "bg-amber-100 text-amber-700" : "bg-orange-100 text-orange-700"
+              )}>
+                {user?.firstName?.charAt(0) || 'U'}
+              </div>
+            )}
+            <div className="ml-3">
+              <p className="text-sm font-medium text-slate-700 truncate w-32">{user?.firstName} {user?.lastName}</p>
+              <div className="flex items-center space-x-3 mt-0.5">
+                <button 
+                  onClick={() => setIsSettingsOpen(true)}
+                  className="text-xs text-slate-500 hover:text-slate-700 flex items-center transition-colors font-medium"
+                >
+                  <Settings className="h-3 w-3 mr-1" />
+                  Settings
+                </button>
+                <button 
+                  onClick={logout}
+                  className="text-xs text-slate-500 hover:text-slate-700 flex items-center transition-colors font-medium"
+                >
+                  <LogOut className="h-3 w-3 mr-1" />
+                  Logout
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </>
+  );
+
+  return (
+    <div className="flex h-screen bg-transparent text-slate-800">
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:flex w-64 glass flex-col z-10 m-3 mr-0 rounded-2xl overflow-hidden shadow-xl">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Drawer Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden transition-opacity"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <div className={cn(
+        "fixed inset-y-0 left-0 z-50 w-72 transform glass flex-col overflow-hidden shadow-2xl transition-transform duration-300 ease-in-out lg:hidden",
+        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <SidebarContent />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden m-3 rounded-2xl glass-card">
-        <header className="h-16 border-b border-white/40 flex items-center justify-between px-8 shadow-sm glass">
+      <div className="flex-1 flex flex-col overflow-hidden m-3 lg:ml-3 rounded-2xl glass-card">
+        <header className="h-16 shrink-0 border-b border-white/40 flex items-center justify-between px-4 lg:px-8 shadow-sm glass">
           <div className="flex items-center">
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="mr-4 lg:hidden p-2 rounded-md text-slate-600 hover:bg-white/40 hover:text-slate-900 transition-colors"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
             <h1 className="text-xl font-semibold text-slate-800">Workspace</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100/50 text-green-800 border border-green-200">
+            <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100/50 text-green-800 border border-green-200">
               Supabase Connected
             </span>
           </div>
         </header>
 
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent p-8">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent p-4 lg:p-8">
           <div className="mx-auto max-w-6xl">
             <Outlet />
           </div>

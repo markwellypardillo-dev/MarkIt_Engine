@@ -106,32 +106,34 @@ export default function Gradebook() {
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in duration-500">
-        <div className="flex justify-between items-center p-4 border-b border-slate-200 bg-slate-50">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border-b border-slate-200 bg-slate-50 gap-3">
           <h3 className="font-medium text-slate-800">Assignments</h3>
           {isAddingAssignment ? (
-             <div className="flex items-center space-x-2">
+             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 <input
                   type="text"
                   autoFocus
                   value={newAssignmentName}
                   onChange={e => setNewAssignmentName(e.target.value)}
                   placeholder="Assignment Name"
-                  className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm outline-none"
+                  className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm outline-none flex-1 min-w-0"
                 />
                 <input
                   type="number"
                   value={newAssignmentScore}
                   onChange={e => setNewAssignmentScore(parseInt(e.target.value) || 0)}
                   placeholder="Max Score"
-                  className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm outline-none w-24"
+                  className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm outline-none w-full sm:w-24"
                 />
-                <button onClick={handleAddAssignment} className="text-white bg-orange-600 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-700">Save</button>
-                <button onClick={() => setIsAddingAssignment(false)} className="text-slate-500 hover:text-slate-700 px-2 py-1.5 text-sm font-medium">Cancel</button>
+                <div className="flex items-center gap-2 sm:mt-0">
+                  <button onClick={handleAddAssignment} className="text-white bg-orange-600 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-700 flex-1 justify-center sm:flex-none">Save</button>
+                  <button onClick={() => setIsAddingAssignment(false)} className="text-slate-600 bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded-lg text-sm font-medium flex-1 justify-center sm:flex-none transition-colors">Cancel</button>
+                </div>
              </div>
           ) : (
             <button
               onClick={() => setIsAddingAssignment(true)}
-              className="inline-flex items-center px-3 py-1.5 bg-orange-50 text-orange-700 hover:bg-orange-100 rounded-lg text-sm font-medium transition-colors"
+              className="inline-flex items-center justify-center px-4 py-2 bg-orange-50 text-orange-700 hover:bg-orange-100 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
             >
               <Plus className="h-4 w-4 mr-1" />
               Add Assignment

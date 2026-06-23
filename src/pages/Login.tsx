@@ -40,28 +40,28 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center animate-in fade-in zoom-in-95 duration-500">
         <div className="mx-auto flex items-center justify-center mb-6">
-          <img src="https://i.postimg.cc/KjMBHmTL/Mark-IT-Engine-2.png" alt="MarkIt Engine Logo" className="h-20 w-auto object-contain" referrerPolicy="no-referrer" />
+          <img src="https://i.postimg.cc/KjMBHmTL/Mark-IT-Engine-2.png" alt="MarkIt Engine Logo" className="h-24 w-auto object-contain drop-shadow-xl" referrerPolicy="no-referrer" />
         </div>
-        <h2 className="mt-2 text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h2 className="mt-2 text-4xl font-black text-slate-800 tracking-tight drop-shadow-sm">
           MarkIt Engine
         </h2>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-slate-700 font-medium">
           {isLogin ? 'Sign in to access your dashboard' : 'Register for an institutional account'}
         </p>
-        <div className="mt-4 max-w-sm mx-auto">
-          <p className="text-sm text-slate-500 leading-relaxed">
+        <div className="mt-4 max-w-sm mx-auto p-4 rounded-xl glass">
+          <p className="text-sm text-slate-700 leading-relaxed font-medium">
             The comprehensive school administration and teacher toolkit. Power your classroom with predictive analytics, AI-assisted grading rubrics, and automated workflows.
           </p>
         </div>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-xl sm:px-10 border border-slate-200">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 fill-mode-both">
+        <div className="py-8 px-4 sm:rounded-2xl sm:px-10 glass-panel">
           
-          <div className="flex bg-slate-100 p-1 rounded-lg mb-8">
+          <div className="flex bg-white/40 p-1 rounded-xl mb-8 border border-white/50 shadow-inner">
             <button
               onClick={() => setIsLogin(true)}
               className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
