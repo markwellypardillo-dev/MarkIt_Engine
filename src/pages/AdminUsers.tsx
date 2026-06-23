@@ -2,13 +2,6 @@ import React from 'react';
 import { Shield, UserPlus, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-const mockUsers = [
-  { id: '1', name: 'Sarah Williams', email: 's.williams@institution.edu', role: 'Teacher', status: 'Active', classes: 4 },
-  { id: '2', name: 'Dr. John Doe', email: 'j.doe@institution.edu', role: 'Teacher', status: 'Active', classes: 3 },
-  { id: '3', name: 'Alex Johnson', email: 'a.johnson@student.edu', role: 'Student', status: 'Active', classes: 6 },
-  { id: '4', name: 'Emily Stanton', email: 'e.stanton@institution.edu', role: 'Teacher', status: 'Inactive', classes: 0 },
-];
-
 export default function AdminUsers() {
   const { user } = useAuth();
 
@@ -23,6 +16,18 @@ export default function AdminUsers() {
       </div>
     );
   }
+
+  const displayUsers = [
+    { 
+      id: user.id, 
+      name: `${user.firstName} ${user.lastName}`, 
+      email: user.email, 
+      role: user.role === 'admin' ? 'Administrator' : 'Teacher', 
+      status: 'Active', 
+      classes: 3,
+      profilePicture: user.profilePicture
+    }
+  ];
 
   return (
     <div className="space-y-6">
@@ -53,33 +58,37 @@ export default function AdminUsers() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-slate-200">
-              {mockUsers.map((mockUser) => (
-                <tr key={mockUser.id} className="hover:bg-slate-50 transition-colors">
+              {displayUsers.map((tableUser) => (
+                <tr key={tableUser.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-700 font-medium font-sm">
-                        {mockUser.name?.charAt(0) || '?'}
-                      </div>
+                      {tableUser.profilePicture ? (
+                        <img src={tableUser.profilePicture} alt="Profile" className="h-10 w-10 rounded-full object-cover border border-slate-200" referrerPolicy="no-referrer" />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-700 font-medium font-sm">
+                          {tableUser.name?.charAt(0) || '?'}
+                        </div>
+                      )}
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-slate-900">{mockUser.name}</div>
-                        <div className="text-sm text-slate-500">{mockUser.email}</div>
+                        <div className="text-sm font-medium text-slate-900">{tableUser.name}</div>
+                        <div className="text-sm text-slate-500">{tableUser.email}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {mockUser.role}
+                      {tableUser.role}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      mockUser.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-800'
+                      tableUser.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-800'
                     }`}>
-                      {mockUser.status}
+                      {tableUser.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                    {mockUser.classes > 0 ? `${mockUser.classes} active` : 'None'}
+                    {tableUser.classes > 0 ? `${tableUser.classes} active` : 'None'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-3">

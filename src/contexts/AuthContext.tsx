@@ -18,6 +18,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   register: (email: string, firstName: string, lastName: string, password?: string) => Promise<void>;
   switchRole: () => void;
+  updateProfile: (firstName: string, lastName: string, profilePictureUrl?: string) => Promise<void>;
   updateProfilePicture: (url: string) => Promise<void>;
   loading: boolean;
 }
@@ -160,6 +161,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(prev => prev ? { ...prev, role: prev.role === 'admin' ? 'teacher' : 'admin' } : null);
   };
 
+  const updateProfile = async (firstName: string, lastName: string, profilePictureUrl?: string) => {
+    if (!user) return;
+    
+    // Save to local state
+    setUser(prev => prev ? { ...prev, firstName, lastName, profilePicture: profilePictureUrl || prev.profilePicture } : null);
+    
+    // Try to save to Supabase User Metadata if using real auth
+    if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_URL !== 'https://placeholder-project-id.supabase.co') {
+      await supabase.auth.updateUser({
+        data: { 
+          first_name: firstName,
+          last_name: lastName,
+          ...(profilePictureUrl ? { avatar_url: profilePictureUrl } : {})
+        }
+      });
+    }
+
+    if (profilePictureUrl) {
+      // Always save to local storage as backup
+      try {
+        const savedPics = JSON.parse(localStorage.getItem('profilePictures') || '{}');
+        savedPics[user.email.toLowerCase()] = profilePictureUrl;
+        localStorage.setItem('profilePictures', JSON.stringify(savedPics));
+      } catch (e) {
+        console.error('Failed to save profile picture to local storage', e);
+      }
+    }
+  };
+
   const updateProfilePicture = async (url: string) => {
     if (!user) return;
     
@@ -184,7 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, switchRole, updateProfilePicture, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, register, switchRole, updateProfile, updateProfilePicture, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
