@@ -82,13 +82,42 @@ const INITIAL_PROFILES: ReadingNumeracyProfile[] = [];
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+function useLocalStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === "undefined") {
+      return initialValue;
+    }
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.log(error);
+      return initialValue;
+    }
+  });
+
+  const setValue = (value: T | ((val: T) => T)) => {
+    try {
+      const valueToStore =
+        value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return [storedValue, setValue] as const;
+}
+
 export function DataProvider({ children }: { children: React.ReactNode }) {
-  const [classes, setClasses] = useState<Class[]>(MOCK_CLASSES);
-  const [students, setStudents] = useState<Student[]>(MOCK_STUDENTS);
-  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>(INITIAL_ATTENDANCE);
-  const [assignments, setAssignments] = useState<Assignment[]>(MOCK_ASSIGNMENTS);
-  const [grades, setGrades] = useState<Grade[]>(MOCK_GRADES);
-  const [profiles, setProfiles] = useState<ReadingNumeracyProfile[]>(INITIAL_PROFILES);
+  const [classes, setClasses] = useLocalStorage<Class[]>('markit_classes', MOCK_CLASSES);
+  const [students, setStudents] = useLocalStorage<Student[]>('markit_students', MOCK_STUDENTS);
+  const [attendanceRecords, setAttendanceRecords] = useLocalStorage<AttendanceRecord[]>('markit_attendance', INITIAL_ATTENDANCE);
+  const [assignments, setAssignments] = useLocalStorage<Assignment[]>('markit_assignments', MOCK_ASSIGNMENTS);
+  const [grades, setGrades] = useLocalStorage<Grade[]>('markit_grades', MOCK_GRADES);
+  const [profiles, setProfiles] = useLocalStorage<ReadingNumeracyProfile[]>('markit_profiles', INITIAL_PROFILES);
 
   const saveProfile = (studentId: string, readingLevel: any, numeracyLevel: any, remarks: string) => {
     setProfiles(prev => {
