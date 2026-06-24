@@ -36,18 +36,28 @@ export interface Grade {
   score: number | null;
 }
 
+export interface ReadingNumeracyProfile {
+  id: string;
+  studentId: string;
+  readingLevel: 'frustration' | 'instructional' | 'independent' | null;
+  numeracyLevel: 'non-numerate' | 'emergent' | 'numerate' | null;
+  remarks: string;
+}
+
 interface DataContextType {
   classes: Class[];
   students: Student[];
   attendanceRecords: AttendanceRecord[];
   assignments: Assignment[];
   grades: Grade[];
+  profiles: ReadingNumeracyProfile[];
   saveAttendance: (date: string, classId: string, records: {studentId: string, status: AttendanceStatus}[]) => void;
   addClass: (name: string) => string;
   importStudents: (classId: string, names: string[]) => void;
   addAssignment: (classId: string, name: string, maxScore: number) => string;
   saveGrade: (studentId: string, assignmentId: string, score: number | null) => void;
   updateStudentName: (studentId: string, newName: string) => void;
+  saveProfile: (studentId: string, readingLevel: any, numeracyLevel: any, remarks: string) => void;
   getStudentStats: (studentId: string) => { 
     present: number; 
     absent: number; 
@@ -68,6 +78,8 @@ const MOCK_ASSIGNMENTS: Assignment[] = [];
 
 const MOCK_GRADES: Grade[] = [];
 
+const INITIAL_PROFILES: ReadingNumeracyProfile[] = [];
+
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
@@ -76,6 +88,17 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>(INITIAL_ATTENDANCE);
   const [assignments, setAssignments] = useState<Assignment[]>(MOCK_ASSIGNMENTS);
   const [grades, setGrades] = useState<Grade[]>(MOCK_GRADES);
+  const [profiles, setProfiles] = useState<ReadingNumeracyProfile[]>(INITIAL_PROFILES);
+
+  const saveProfile = (studentId: string, readingLevel: any, numeracyLevel: any, remarks: string) => {
+    setProfiles(prev => {
+      const existing = prev.find(p => p.studentId === studentId);
+      if (existing) {
+        return prev.map(p => p.id === existing.id ? { ...p, readingLevel, numeracyLevel, remarks } : p);
+      }
+      return [...prev, { id: `p-${Date.now()}-${Math.random()}`, studentId, readingLevel, numeracyLevel, remarks }];
+    });
+  };
 
   const addAssignment = (classId: string, name: string, maxScore: number) => {
     const id = `a-${Date.now()}`;
@@ -175,8 +198,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <DataContext.Provider value={{ 
-      classes, students, attendanceRecords, assignments, grades,
-      saveAttendance, addClass, importStudents, addAssignment, saveGrade, updateStudentName, getStudentStats 
+      classes, students, attendanceRecords, assignments, grades, profiles,
+      saveAttendance, addClass, importStudents, addAssignment, saveGrade, updateStudentName, saveProfile, getStudentStats 
     }}>
       {children}
     </DataContext.Provider>

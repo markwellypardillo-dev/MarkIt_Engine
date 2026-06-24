@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Users, Plus, Upload, Trash2 } from 'lucide-react';
+import Papa from 'papaparse';
 
 export default function Learners() {
   const { classes, students, addClass, importStudents } = useData();
@@ -22,10 +23,37 @@ export default function Learners() {
     }
     const file = e.target.files?.[0];
     if (file) {
-      // Mock parsing CSV
-      const newNames = ['Student ' + Math.floor(Math.random() * 1000), 'Student ' + Math.floor(Math.random() * 1000)];
-      importStudents(selectedClass, newNames);
-      alert('Mock imported 2 students. In reality this would parse your CSV file.');
+      Papa.parse(file, {
+        complete: (results) => {
+          // Flatten results and take the first non-empty column as names, or join if needed
+          // Assuming simple CSV with names in one column, or just join them
+          const newNames: string[] = [];
+          results.data.forEach((row: any) => {
+            if (Array.isArray(row)) {
+              const name = row.filter(cell => typeof cell === 'string' && cell.trim()).join(' ');
+              if (name) newNames.push(name.trim());
+            } else if (typeof row === 'object' && row !== null) {
+              // If it has headers
+              const vals = Object.values(row).filter(val => typeof val === 'string' && val.trim());
+              const name = vals.join(' ');
+              if (name) newNames.push(name.trim());
+            }
+          });
+          
+          if (newNames.length > 0) {
+            importStudents(selectedClass, newNames);
+          } else {
+            alert('No valid student names found in the CSV.');
+          }
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Failed to parse CSV file.');
+        },
+        skipEmptyLines: true
+      });
+      // reset input
+      e.target.value = '';
     }
   };
 

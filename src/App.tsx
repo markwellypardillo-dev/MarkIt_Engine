@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Attendance from './pages/Attendance';
 import Gradebook from './pages/Gradebook';
 import Learners from './pages/Learners';
+import Profiles from './pages/Profiles';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DataProvider } from './contexts/DataContext';
 
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="attendance" element={<Attendance />} />
               <Route path="grades" element={<Gradebook />} />
               <Route path="learners" element={<Learners />} />
+              <Route path="profiles" element={<Profiles />} />
               <Route path="toolkit" element={<TeacherToolkit />} />
               <Route path="curriculum" element={<Curriculum />} />
               <Route path="repository" element={<Repository />} />
