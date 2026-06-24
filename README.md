@@ -66,10 +66,3 @@ This will bundle the React application and the Express server into the `dist/` d
 ```bash
 npm start
 ```
-
-## Usage Notes
-
-- **Admin Access**: If Supabase is not configured, you can log in using the mock admin credentials:
-  - Email: `admin@gmail.com`
-  - Password: `admin123`
-- **CSV Imports**: In the Learner Management section, you can import students via CSV. Ensure your CSV file has the student names listed (either in a single column or with headers).
